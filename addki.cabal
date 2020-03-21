@@ -10,7 +10,8 @@ executable addki
   hs-source-dirs:      src
   main-is:             Main.hs
   ghc-options:         -Wall -Wincomplete-uni-patterns
-  build-depends:       base
+  build-depends:       base,
+                       yesod-core
   default-language:    Haskell2010
 
 test-suite tests
