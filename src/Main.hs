@@ -10,16 +10,19 @@ data App = App
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
-/page1 Page1R GET
-/page2 Page2R GET
 /json JsonR GET
 |]
 
 instance Yesod App
 
-getHomeR  = defaultLayout [whamlet|<a href=@{Page1R}>Go to page 1!|]
-getPage1R = defaultLayout [whamlet|<a href=@{Page2R}>Go to page 2!|]
-getPage2R = defaultLayout [whamlet|<a href=@{HomeR}>Go home!|]
+getHomeR = defaultLayout $ do
+    setTitle "addki"
+    [whamlet|<h1>addki|]
+    [whamlet|
+    <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
+    <p>But I still can't use line breaks in my source code without affecting the HTML output...
+    |]
+
 getJsonR  = return $ object ["message" .= "Hello World"]
 
 main :: IO ()
