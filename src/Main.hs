@@ -1,4 +1,4 @@
-{-# LANGUAGE ExtendedDefaultRules #-}
+{-# LANGUAGE ExtendedDefaultRules  #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
@@ -21,8 +21,8 @@ getHomeR = defaultLayout $ do
     body { font: 1.0rem/1.1 sans-serif; }
     #content { padding: 10px; }
     |]
-    [whamlet|<h1>addki|]
-    [whamlet|
+    toWidget [hamlet|<h1>addki|]
+    toWidget [hamlet|
     <div #content>
       <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
       <p>But I still can't use line breaks in my source code without affecting the HTML output...
