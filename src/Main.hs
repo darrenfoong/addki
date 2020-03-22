@@ -15,17 +15,32 @@ mkYesod "App" [parseRoutes|
 
 instance Yesod App
 
-getHomeR = defaultLayout $ do
+appLayout :: Widget -> Handler Html
+appLayout widget = do
+    pc <- widgetToPageContent $ do
+          widget
+          toWidget [lucius|
+          body { font: 1.0rem/1.1 sans-serif; }
+          #content { padding: 10px; }
+          |]
+    withUrlRenderer
+          [hamlet|
+          $doctype 5
+          <html>
+            <head>
+              <title>#{pageTitle pc}
+              ^{pageHead pc}
+            <body>
+              <div #content>
+                ^{pageBody pc}
+          |]
+
+getHomeR = appLayout $ do
     setTitle "addki"
-    toWidget [lucius|
-    body { font: 1.0rem/1.1 sans-serif; }
-    #content { padding: 10px; }
-    |]
     toWidget [hamlet|<h1>addki|]
     toWidget [hamlet|
-    <div #content>
-      <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
-      <p>But I still can't use line breaks in my source code without affecting the HTML output...
+    <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
+    <p>But I still can't use line breaks in my source code without affecting the HTML output...
     |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
