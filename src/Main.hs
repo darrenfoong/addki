@@ -11,16 +11,12 @@ data App = App
 mkYesod "App" [parseRoutes|
 / HomeR GET
 /json JsonR GET
+/oof NotFoundR GET
 |]
 
 instance Yesod App where
     defaultLayout = appLayout
-    errorHandler NotFound = fmap toTypedContent $ defaultLayout $ do
-        setTitle "Not found"
-        toWidget [hamlet|
-        <h1>Oof!
-        <p>We couldn't find your page
-        |]
+    errorHandler NotFound = redirect NotFoundR
     errorHandler other = defaultErrorHandler other
 
 appLayout :: Widget -> Handler Html
@@ -53,6 +49,13 @@ getHomeR = defaultLayout $ do
     |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
+
+getNotFoundR = defaultLayout $ do
+    setTitle "Not found"
+    toWidget [hamlet|<h1>Oof!|]
+    toWidget [hamlet|
+    <p>We couldn't find your page
+    |]
 
 main :: IO ()
 main = warp 3000 App
