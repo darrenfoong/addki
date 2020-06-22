@@ -19,6 +19,7 @@ appLayout :: Widget -> Handler Html
 appLayout widget = do
     pc <- widgetToPageContent $ do
           widget
+          toWidgetHead [hamlet|<meta name="keywords" content="anki">|]
           toWidget [lucius|
           body { font: 1.0rem/1.1 sans-serif; }
           #content { padding: 10px; }
@@ -37,7 +38,6 @@ appLayout widget = do
 
 getHomeR = appLayout $ do
     setTitle "addki"
-    toWidgetHead [hamlet|<meta name="keywords" content="anki">|]
     toWidget [hamlet|<h1>addki|]
     toWidget [hamlet|
     <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
