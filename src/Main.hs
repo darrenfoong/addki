@@ -13,7 +13,8 @@ mkYesod "App" [parseRoutes|
 /json JsonR GET
 |]
 
-instance Yesod App
+instance Yesod App where
+    defaultLayout = appLayout
 
 appLayout :: Widget -> Handler Html
 appLayout widget = do
@@ -36,7 +37,7 @@ appLayout widget = do
                 ^{pageBody pc}
           |]
 
-getHomeR = appLayout $ do
+getHomeR = defaultLayout $ do
     setTitle "addki"
     toWidget [hamlet|<h1>addki|]
     toWidget [hamlet|
