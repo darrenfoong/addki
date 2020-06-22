@@ -15,6 +15,13 @@ mkYesod "App" [parseRoutes|
 
 instance Yesod App where
     defaultLayout = appLayout
+    errorHandler NotFound = fmap toTypedContent $ defaultLayout $ do
+        setTitle "Not found"
+        toWidget [hamlet|
+        <h1>Oof!
+        <p>We couldn't find your page
+        |]
+    errorHandler other = defaultErrorHandler other
 
 appLayout :: Widget -> Handler Html
 appLayout widget = do
