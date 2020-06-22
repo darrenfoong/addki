@@ -6,7 +6,7 @@
 {-# LANGUAGE ViewPatterns          #-}
 
 import Yesod
-import Data.Text (Text)
+import Data.Text (Text, pack)
 
 data App = App
 
@@ -52,6 +52,7 @@ getHomeR = defaultLayout $ do
     |]
 
 getEntryR entry = defaultLayout $ do
+    $logInfo $ "Adding: " <> pack (show entry)
     setTitle "addki"
     toWidget [hamlet|
     <p>Adding entry for <em>#{entry}</em>...
