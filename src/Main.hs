@@ -37,6 +37,7 @@ appLayout widget = do
 
 getHomeR = appLayout $ do
     setTitle "addki"
+    toWidgetHead [hamlet|<meta name="keywords" content="anki">|]
     toWidget [hamlet|<h1>addki|]
     toWidget [hamlet|
     <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
