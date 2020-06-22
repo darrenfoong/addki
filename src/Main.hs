@@ -3,13 +3,16 @@
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE ViewPatterns          #-}
 
 import Yesod
+import Data.Text (Text)
 
 data App = App
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
+/entry/#Text EntryR GET
 /json JsonR GET
 /oof NotFoundR GET
 |]
@@ -46,6 +49,12 @@ getHomeR = defaultLayout $ do
     toWidget [hamlet|
     <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
     <p>But I still can't use line breaks in my source code without affecting the HTML output...
+    |]
+
+getEntryR entry = defaultLayout $ do
+    setTitle "addki"
+    toWidget [hamlet|
+    <p>Adding entry for <em>#{entry}</em>...
     |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
