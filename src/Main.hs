@@ -41,7 +41,7 @@ data Entry = Entry
     deriving Show
 
 entryForm :: Html -> MForm Handler (FormResult Entry, Widget)
-entryForm = renderDivs $ Entry
+entryForm = renderBootstrap $ Entry
     <$> areq textField "Language" Nothing
     <*> areq textField "Word" Nothing
     <*> areq textField "Definition" Nothing
