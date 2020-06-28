@@ -42,7 +42,7 @@ data Entry = Entry
     , alternateForm :: Maybe Text
     , additionalInfo :: Maybe Text
     , pronunciation :: Maybe Text
-    , context :: Maybe Text -- TODO [Text]
+    , context :: Maybe Textarea
     , tags :: Maybe Text -- TODO [Text]
     }
     deriving Show
@@ -55,7 +55,7 @@ entryForm = renderBootstrap $ Entry
     <*> aopt textField "Alternate form" Nothing
     <*> aopt textField "Additional info" Nothing
     <*> aopt textField "Pronunciation" Nothing
-    <*> aopt textField "Context" Nothing
+    <*> aopt textareaField "Context" Nothing
     <*> aopt textField "Tags" Nothing
 
 appLayout :: Widget -> Handler Html
