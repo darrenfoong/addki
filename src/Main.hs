@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ExtendedDefaultRules  #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
@@ -5,8 +6,10 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE ViewPatterns          #-}
 
-import Yesod
+import Control.Applicative ((<$>), (<*>))
 import Data.Text (Text, pack)
+import Yesod
+import Yesod.Form
 
 data App = App
 
@@ -22,6 +25,9 @@ instance Yesod App where
     errorHandler NotFound = redirect NotFoundR
     errorHandler other = defaultErrorHandler other
 
+instance RenderMessage App FormMessage where
+    renderMessage _ _ = defaultFormMessage
+
 data Entry = Entry
     { language :: Text
     , word :: Text
@@ -29,10 +35,21 @@ data Entry = Entry
     , alternateForm :: Maybe Text
     , additionalInfo :: Maybe Text
     , pronunciation :: Maybe Text
-    , context :: [Text]
-    , tags :: [Text]
+    , context :: Maybe Text -- TODO [Text]
+    , tags :: Maybe Text -- TODO [Text]
     }
     deriving Show
+
+entryForm :: Html -> MForm Handler (FormResult Entry, Widget)
+entryForm = renderDivs $ Entry
+    <$> areq textField "Language" Nothing
+    <*> areq textField "Word" Nothing
+    <*> areq textField "Definition" Nothing
+    <*> aopt textField "Alternate form" Nothing
+    <*> aopt textField "Additional info" Nothing
+    <*> aopt textField "Pronunciation" Nothing
+    <*> aopt textField "Context" Nothing
+    <*> aopt textField "Tags" Nothing
 
 appLayout :: Widget -> Handler Html
 appLayout widget = do

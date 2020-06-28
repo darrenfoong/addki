@@ -12,6 +12,7 @@ executable addki
   ghc-options:         -Wall -Wincomplete-uni-patterns
   build-depends:       base,
                        yesod,
+                       yesod-form,
                        text
   default-language:    Haskell2010
 
