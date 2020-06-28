@@ -72,13 +72,15 @@ appLayout widget = do
                 ^{pageBody pc}
           |]
 
-getHomeR = defaultLayout $ do
-    setTitle "addki"
-    toWidget [hamlet|<h1>addki|]
-    toWidget [hamlet|
-    <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
-    <p>But I still can't use line breaks in my source code without affecting the HTML output...
-    |]
+getHomeR = do
+    (widget, enctype) <- generateFormPost entryForm
+    defaultLayout $ do
+      setTitle "addki"
+      toWidget [hamlet|<h1>addki|]
+      toWidget [hamlet|
+      <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
+      <p>But I still can't use line breaks in my source code without affecting the HTML output...
+      |]
 
 getEntryR entry = defaultLayout $ do
     $logInfo $ "Adding: " <> pack (show entry)
