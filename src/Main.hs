@@ -75,25 +75,25 @@ appLayout widget = do
 getHomeR = do
     (entryFormWidget, enctype) <- generateFormPost entryForm
     defaultLayout $ do
-      setTitle "addki"
-      toWidget [hamlet|<h1>addki|]
-      toWidget [hamlet|
-      <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
-      <p>But I still can't use line breaks in my source code without affecting the HTML output...
-      |]
-      [whamlet|
-      <form method=post action=@{EntryR} enctype=#{enctype}>
-        ^{entryFormWidget}
-        <button>Add
-      |]
+        setTitle "addki"
+        toWidget [hamlet|<h1>addki|]
+        toWidget [hamlet|
+        <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
+        <p>But I still can't use line breaks in my source code without affecting the HTML output...
+        |]
+        [whamlet|
+        <form method=post action=@{EntryR} enctype=#{enctype}>
+          ^{entryFormWidget}
+          <button>Add
+        |]
 
 postEntryR = do
     ((result, entryFormWidget), enctype) <- runFormPost entryForm
     defaultLayout $ do
-      setTitle "addki"
-      toWidget [hamlet|
-      <p>Submitted!
-      |]
+        setTitle "addki"
+        toWidget [hamlet|
+        <p>Submitted!
+        |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
 
