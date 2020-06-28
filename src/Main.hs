@@ -28,8 +28,15 @@ instance Yesod App where
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
+data Language = ZH | KR | FR deriving (Eq, Enum, Bounded)
+
+instance Show Language where
+    show ZH = "中文"
+    show KR = "한국어"
+    show FR = "Français"
+
 data Entry = Entry
-    { language :: Text
+    { language :: Language
     , word :: Text
     , definition :: Text
     , alternateForm :: Maybe Text
@@ -42,7 +49,7 @@ data Entry = Entry
 
 entryForm :: Html -> MForm Handler (FormResult Entry, Widget)
 entryForm = renderBootstrap $ Entry
-    <$> areq textField "Language" Nothing
+    <$> areq (selectField optionsEnum) "Language" Nothing
     <*> areq textField "Word" Nothing
     <*> areq textField "Definition" Nothing
     <*> aopt textField "Alternate form" Nothing
