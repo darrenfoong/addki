@@ -91,9 +91,13 @@ postEntryR = do
     ((result, entryFormWidget), enctype) <- runFormPost entryForm
     defaultLayout $ do
         setTitle "addki"
-        toWidget [hamlet|
-        <p>Submitted!
-        |]
+        case result of
+            FormSuccess entry -> [whamlet|<p>#{show entry}|]
+            _ -> [whamlet|
+                 <form method=post action=@{EntryR} enctype=#{enctype}>
+                    ^{entryFormWidget}
+                    <button>Add
+                 |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
 
