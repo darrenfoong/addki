@@ -15,7 +15,7 @@ data App = App
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
-/entry/#Text EntryR GET
+/entry EntryR POST
 /json JsonR GET
 /oof NotFoundR GET
 |]
@@ -73,7 +73,7 @@ appLayout widget = do
           |]
 
 getHomeR = do
-    (widget, enctype) <- generateFormPost entryForm
+    (entryFormWidget, enctype) <- generateFormPost entryForm
     defaultLayout $ do
       setTitle "addki"
       toWidget [hamlet|<h1>addki|]
@@ -81,13 +81,19 @@ getHomeR = do
       <p><em>addki</em> is a tool to retrieve definitions of foreign words from online dictionaries and convert them into an Anki-importable format.
       <p>But I still can't use line breaks in my source code without affecting the HTML output...
       |]
+      [whamlet|
+      <form method=post action=@{EntryR} enctype=#{enctype}>
+        ^{entryFormWidget}
+        <button>Add
+      |]
 
-getEntryR entry = defaultLayout $ do
-    $logInfo $ "Adding: " <> pack (show entry)
-    setTitle "addki"
-    toWidget [hamlet|
-    <p>Adding entry for <em>#{entry}</em>...
-    |]
+postEntryR = do
+    ((result, entryFormWidget), enctype) <- runFormPost entryForm
+    defaultLayout $ do
+      setTitle "addki"
+      toWidget [hamlet|
+      <p>Submitted!
+      |]
 
 getJsonR  = return $ object ["message" .= "Hello World"]
 
