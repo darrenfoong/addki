@@ -22,6 +22,18 @@ instance Yesod App where
     errorHandler NotFound = redirect NotFoundR
     errorHandler other = defaultErrorHandler other
 
+data Entry = Entry
+    { language :: Text
+    , word :: Text
+    , definition :: Text
+    , alternateForm :: Maybe Text
+    , additionalInfo :: Maybe Text
+    , pronunciation :: Maybe Text
+    , context :: [Text]
+    , tags :: [Text]
+    }
+    deriving Show
+
 appLayout :: Widget -> Handler Html
 appLayout widget = do
     pc <- widgetToPageContent $ do
