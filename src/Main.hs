@@ -11,10 +11,8 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE ViewPatterns          #-}
 
-import Control.Applicative ((<$>), (<*>))
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Yesod
-import Yesod.Form
 import Database.Persist.Sqlite
 import Control.Monad.Trans.Resource (runResourceT)
 import Control.Monad.Logger (runStderrLoggingT)
@@ -106,6 +104,7 @@ appLayout widget = do
                 ^{pageBody pc}
           |]
 
+getHomeR :: Handler Html
 getHomeR = do
     (entryFormWidget, enctype) <- generateFormPost entryForm
     defaultLayout $ do
@@ -121,6 +120,7 @@ getHomeR = do
           <button>Add
         |]
 
+postEntryR :: Handler Html
 postEntryR = do
     ((result, entryFormWidget), enctype) <- runFormPost entryForm
     defaultLayout $ do
@@ -133,8 +133,10 @@ postEntryR = do
                     <button>Add
                  |]
 
+getJsonR :: HandlerFor App Value
 getJsonR  = return $ object ["message" .= "Hello World"]
 
+getNotFoundR :: Handler Html
 getNotFoundR = defaultLayout $ do
     setTitle "Not found"
     toWidget [hamlet|<h1>Oof!|]
