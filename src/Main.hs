@@ -137,9 +137,9 @@ postEntryR = do
     ((result, entryFormWidget), enctype) <- runFormPost entryForm
     case result of
         FormSuccess entryF -> runDB $ insert $ Entry
-                                "Language"
-                                "Word"
-                                "Defintion"
+                                (show (language entryF))
+                                (show (word entryF))
+                                (show (definition entryF))
                                 Nothing
                                 Nothing
                                 Nothing
