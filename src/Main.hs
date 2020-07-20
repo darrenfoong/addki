@@ -26,7 +26,7 @@ instance Show Language where
     show KR = "한국어"
     show FR = "Français"
 
-data Entry = Entry
+data EntryForm = EntryForm
     { language :: Language
     , word :: Text
     , definition :: Text
@@ -39,7 +39,7 @@ data Entry = Entry
     deriving Show
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-EntrySql
+Entry
     language String
     word String
     definition String
@@ -74,8 +74,8 @@ instance YesodPersist App where
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
-entryForm :: Html -> MForm Handler (FormResult Entry, Widget)
-entryForm = renderBootstrap $ Entry
+entryForm :: Html -> MForm Handler (FormResult EntryForm, Widget)
+entryForm = renderBootstrap $ EntryForm
     <$> areq (selectField optionsEnum) "Language" Nothing
     <*> areq textField "Word" Nothing
     <*> areq textField "Definition" Nothing
