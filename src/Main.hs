@@ -1,3 +1,8 @@
+{-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE DerivingStrategies    #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE StandaloneDeriving    #-}
+{-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ExtendedDefaultRules  #-}
 {-# LANGUAGE OverloadedStrings     #-}
@@ -10,23 +15,9 @@ import Control.Applicative ((<$>), (<*>))
 import Data.Text (Text, pack)
 import Yesod
 import Yesod.Form
-
-data App = App
-
-mkYesod "App" [parseRoutes|
-/ HomeR GET
-/entry EntryR POST
-/json JsonR GET
-/oof NotFoundR GET
-|]
-
-instance Yesod App where
-    defaultLayout = appLayout
-    errorHandler NotFound = redirect NotFoundR
-    errorHandler other = defaultErrorHandler other
-
-instance RenderMessage App FormMessage where
-    renderMessage _ _ = defaultFormMessage
+import Database.Persist.Sqlite
+import Control.Monad.Trans.Resource (runResourceT)
+import Control.Monad.Logger (runStderrLoggingT)
 
 data Language = ZH | KR | FR deriving (Eq, Enum, Bounded)
 
@@ -46,6 +37,42 @@ data Entry = Entry
     , tags :: Maybe Text -- TODO [Text]
     }
     deriving Show
+
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+EntrySql
+    language String
+    word String
+    definition String
+    alternateForm String
+    additionalInfo String
+    pronunciation String
+    context String
+    tags String
+|]
+
+newtype App = App ConnectionPool
+
+mkYesod "App" [parseRoutes|
+/ HomeR GET
+/entry EntryR POST
+/json JsonR GET
+/oof NotFoundR GET
+|]
+
+instance Yesod App where
+    defaultLayout = appLayout
+    errorHandler NotFound = redirect NotFoundR
+    errorHandler other = defaultErrorHandler other
+
+instance YesodPersist App where
+    type YesodPersistBackend App = SqlBackend
+
+    runDB action = do
+        App pool <- getYesod
+        runSqlPool action pool
+
+instance RenderMessage App FormMessage where
+    renderMessage _ _ = defaultFormMessage
 
 entryForm :: Html -> MForm Handler (FormResult Entry, Widget)
 entryForm = renderBootstrap $ Entry
@@ -115,5 +142,10 @@ getNotFoundR = defaultLayout $ do
     <p>We couldn't find your page
     |]
 
+openConnectionCount :: Int
+openConnectionCount = 10
+
 main :: IO ()
-main = warp 3000 App
+main = runStderrLoggingT $ withSqlitePool "test.db3" openConnectionCount $ \pool -> liftIO $ do
+    runResourceT $ flip runSqlPool pool $ runMigration migrateAll
+    warp 3000 $ App pool
