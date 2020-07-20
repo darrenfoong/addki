@@ -140,11 +140,11 @@ postEntryR = do
                                 (show $ language entryF)
                                 (show $ word entryF)
                                 (show $ definition entryF)
-                                Nothing
-                                Nothing
-                                Nothing
-                                Nothing
-                                Nothing
+                                (show <$> alternateForm entryF)
+                                (show <$> additionalInfo entryF)
+                                (show <$> pronunciation entryF)
+                                (show <$> context entryF)
+                                (show <$> tags entryF)
     defaultLayout $ do
         setTitle "addki"
         case result of
