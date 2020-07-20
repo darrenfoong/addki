@@ -52,7 +52,7 @@ newtype App = App ConnectionPool
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
-/entry EntryR POST
+/entry EntryR GET POST
 /json JsonR GET
 /oof NotFoundR GET
 |]
@@ -118,6 +118,18 @@ getHomeR = do
         <form method=post action=@{EntryR} enctype=#{enctype}>
           ^{entryFormWidget}
           <button>Add
+        |]
+
+getEntryR :: Handler Html
+getEntryR = do
+    entries <- runDB $ selectList [] [Desc EntryWord, LimitTo 10]
+    defaultLayout $ do
+        setTitle "addki"
+        toWidget [hamlet|<h1>All entries|]
+        [whamlet|
+            <ul>
+                $forall Entity entryId entry <- entries
+                    <li>#{entryWord entry}
         |]
 
 postEntryR :: Handler Html
