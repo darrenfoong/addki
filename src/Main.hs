@@ -41,11 +41,11 @@ Entry
     language String
     word String
     definition String
-    alternateForm String
-    additionalInfo String
-    pronunciation String
-    context String
-    tags String
+    alternateForm String Maybe
+    additionalInfo String Maybe
+    pronunciation String Maybe
+    context String Maybe
+    tags String Maybe
 |]
 
 newtype App = App ConnectionPool
@@ -135,6 +135,16 @@ getEntryR = do
 postEntryR :: Handler Html
 postEntryR = do
     ((result, entryFormWidget), enctype) <- runFormPost entryForm
+    case result of
+        FormSuccess entryF -> runDB $ insert $ Entry
+                                "Language"
+                                "Word"
+                                "Defintion"
+                                Nothing
+                                Nothing
+                                Nothing
+                                Nothing
+                                Nothing
     defaultLayout $ do
         setTitle "addki"
         case result of
