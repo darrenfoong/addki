@@ -24,7 +24,7 @@ instance Show Language where
     show KR = "한국어"
     show FR = "Français"
 
-data EntryForm = EntryForm
+data EntryF = EntryF
     { language :: Language
     , word :: Text
     , definition :: Text
@@ -72,8 +72,8 @@ instance YesodPersist App where
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
-entryForm :: Html -> MForm Handler (FormResult EntryForm, Widget)
-entryForm = renderBootstrap $ EntryForm
+entryForm :: Html -> MForm Handler (FormResult EntryF, Widget)
+entryForm = renderBootstrap $ EntryF
     <$> areq (selectField optionsEnum) "Language" Nothing
     <*> areq textField "Word" Nothing
     <*> areq textField "Definition" Nothing
@@ -138,7 +138,7 @@ postEntryR = do
     defaultLayout $ do
         setTitle "addki"
         case result of
-            FormSuccess entry -> [whamlet|<p>#{show entry}|]
+            FormSuccess entryF -> [whamlet|<p>#{show entryF}|]
             _ -> [whamlet|
                  <form method=post action=@{EntryR} enctype=#{enctype}>
                     ^{entryFormWidget}
