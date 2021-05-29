@@ -41,7 +41,7 @@ public class Entry {
   public String toAnkiString() {
     StringBuilder stringBuilder = new StringBuilder();
 
-    stringBuilder.append("word");
+    stringBuilder.append(word);
 
     if (additionalInfo != null) {
       stringBuilder.append(" ");

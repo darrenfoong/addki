@@ -3,6 +3,7 @@ package expts.service.impl;
 import expts.dao.EntryRepository;
 import expts.model.Entry;
 import expts.model.EntryStatus;
+import expts.model.projection.LanguageOnly;
 import expts.service.EntryService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,9 @@ public class DefaultEntryService implements EntryService {
 
   @Override
   public List<String> getLanguages() {
-    // TODO SQL query
-    return List.of("ko", "jp", "zh-cn");
+    return entryRepository.findDistinctByStatus(EntryStatus.COLLECTED).stream()
+        .map(LanguageOnly::getLanguage)
+        .collect(Collectors.toList());
   }
 
   @Transactional
