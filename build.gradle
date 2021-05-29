@@ -2,7 +2,7 @@ buildscript {
     ext {
        springBootVersion = '2.4.5'
        springCloudVersion = '2020.0.2'
-       spotlessVersion = '3.28.1'
+       spotlessVersion = '5.12.5'
     }
     repositories {
         maven {
@@ -16,19 +16,22 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'com.diffplug.spotless'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 
 version = '0.0.1-SNAPSHOT'
 
+sourceCompatibility = 11
+targetCompatibility = 11
+
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 spotless {
     java {
-        googleJavaFormat('1.6')
+        googleJavaFormat('1.10.0')
     }
 }
 
