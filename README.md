@@ -20,6 +20,12 @@ this project shouldn't take me more than six man-days of effort...
 gradle build
 ```
 
+To build a container image:
+
+```
+gradle bootBuildImage
+```
+
 ## Running
 
 ```
