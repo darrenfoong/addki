@@ -15,3 +15,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+---
+
+cleanup:
+  delay: 10000

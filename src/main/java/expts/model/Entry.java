@@ -1,20 +1,79 @@
 package expts.model;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @Entity
 @Table(name = "entries")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @Data
 public class Entry {
-  @Id private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   private String language;
   private String word;
   private String definition;
   private String alternateForm;
   private String additionalInfo;
   private String pronunciation;
-  private String context;
+
+  @Type(type = "jsonb")
+  @Column(columnDefinition = "jsonb")
+  private List<String> contexts;
+
+  @Type(type = "jsonb")
+  @Column(columnDefinition = "jsonb")
+  private List<String> tags;
+
+  private EntryStatus status;
+
+  public String toAnkiString() {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append("word");
+
+    if (additionalInfo != null) {
+      stringBuilder.append(" ");
+      stringBuilder.append(additionalInfo);
+    }
+
+    stringBuilder.append(";");
+
+    if (alternateForm != null) {
+      stringBuilder.append(alternateForm);
+      stringBuilder.append("<br>");
+    }
+
+    stringBuilder.append(definition);
+
+    if (pronunciation != null) {
+      stringBuilder.append("<br>");
+      stringBuilder.append("(" + pronunciation + ")");
+    }
+
+    stringBuilder.append(";");
+
+    if (contexts != null) {
+      stringBuilder.append(String.join("<br>", contexts));
+    }
+
+    stringBuilder.append(";");
+
+    if (tags != null) {
+      stringBuilder.append(String.join(" ", tags));
+    }
+
+    return stringBuilder.toString();
+  }
 }
