@@ -4,3 +4,14 @@ spring:
 
 server:
   port: 8080
+
+---
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/addki
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create

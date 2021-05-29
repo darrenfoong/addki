@@ -1,8 +1,11 @@
 package expts.model;
 
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import lombok.Data;
 
+@Entity
+@Table(name = "entries")
 @Data
 public class Entry {
   private String language;
@@ -12,5 +15,4 @@ public class Entry {
   private String additionalInfo;
   private String pronunciation;
   private String context;
-  private List<String> tags;
 }
