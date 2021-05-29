@@ -23,6 +23,6 @@ gradle build
 ## Running
 
 ```
-podman run --name postgres -e POSTGRES_PASSWORD=password -d docker.io/postgres:13.3
+podman run --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=addki -p 5432:5432 -d docker.io/postgres:13.3
 gradle bootRun
 ```
