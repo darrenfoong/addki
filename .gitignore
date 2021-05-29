@@ -1,6 +1,9 @@
-dist*
-cabal.*
-.ghc.*
-.stack-work
-*.aes
-*.db3
+.classpath
+.gradle
+.idea
+.project
+.settings
+bin
+build
+out
+*.iml
