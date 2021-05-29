@@ -47,46 +47,48 @@ public class DefaultEntryService implements EntryService {
   }
 
   @Override
-  public void collectEntry(String word, String language) {
-    if (word.equals("공부하다")) {
-      Entry entry = new Entry();
-      entry.setLanguage("ko");
-      entry.setWord(word);
-      entry.setDefinition("to study");
-      entry.setAlternateForm("工夫");
-      entry.setAdditionalInfo(null);
-      entry.setPronunciation(null);
-      entry.setContexts(List.of("저는 매일 공부합니다"));
-      entry.setTags(List.of("v"));
-      entry.setStatus(EntryStatus.COLLECTED);
+  public void collectEntries(List<String> words, String language) {
+    for (String word : words) {
+      if (word.equals("공부하다")) {
+        Entry entry = new Entry();
+        entry.setLanguage("ko");
+        entry.setWord(word);
+        entry.setDefinition("to study");
+        entry.setAlternateForm("工夫");
+        entry.setAdditionalInfo(null);
+        entry.setPronunciation(null);
+        entry.setContexts(List.of("저는 매일 공부합니다"));
+        entry.setTags(List.of("v"));
+        entry.setStatus(EntryStatus.COLLECTED);
 
-      entryRepository.save(entry);
-    } else if (word.equals("勉強する")) {
-      Entry entry = new Entry();
-      entry.setLanguage("jp");
-      entry.setWord(word);
-      entry.setDefinition("공부하다");
-      entry.setAlternateForm("べんきょうする");
-      entry.setAdditionalInfo(null);
-      entry.setPronunciation(null);
-      entry.setContexts(null);
-      entry.setTags(List.of("v"));
-      entry.setStatus(EntryStatus.COLLECTED);
+        entryRepository.save(entry);
+      } else if (word.equals("勉強する")) {
+        Entry entry = new Entry();
+        entry.setLanguage("jp");
+        entry.setWord(word);
+        entry.setDefinition("공부하다");
+        entry.setAlternateForm("べんきょうする");
+        entry.setAdditionalInfo(null);
+        entry.setPronunciation(null);
+        entry.setContexts(null);
+        entry.setTags(List.of("v"));
+        entry.setStatus(EntryStatus.COLLECTED);
 
-      entryRepository.save(entry);
-    } else if (word.equals("读书")) {
-      Entry entry = new Entry();
-      entry.setLanguage("zh-cn");
-      entry.setWord(word);
-      entry.setDefinition("to study");
-      entry.setAlternateForm(null);
-      entry.setAdditionalInfo(null);
-      entry.setPronunciation("du2 shu1");
-      entry.setContexts(null);
-      entry.setTags(List.of("v"));
-      entry.setStatus(EntryStatus.COLLECTED);
+        entryRepository.save(entry);
+      } else if (word.equals("读书")) {
+        Entry entry = new Entry();
+        entry.setLanguage("zh-cn");
+        entry.setWord(word);
+        entry.setDefinition("to study");
+        entry.setAlternateForm(null);
+        entry.setAdditionalInfo(null);
+        entry.setPronunciation("du2 shu1");
+        entry.setContexts(null);
+        entry.setTags(List.of("v"));
+        entry.setStatus(EntryStatus.COLLECTED);
 
-      entryRepository.save(entry);
+        entryRepository.save(entry);
+      }
     }
   }
 

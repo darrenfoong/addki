@@ -1,7 +1,7 @@
 package addki.controller;
 
 import addki.model.Entry;
-import addki.request.CollectEntryRequest;
+import addki.request.CollectEntriesRequest;
 import addki.service.EntryService;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -51,8 +51,10 @@ public class EntryController {
   }
 
   @PostMapping("/entry/collect")
-  public ResponseEntity<Void> collectEntry(@RequestBody CollectEntryRequest collectEntryRequest) {
-    entryService.collectEntry(collectEntryRequest.getWord(), collectEntryRequest.getLanguage());
+  public ResponseEntity<Void> collectEntry(
+      @RequestBody CollectEntriesRequest collectEntriesRequest) {
+    entryService.collectEntries(
+        collectEntriesRequest.getWords(), collectEntriesRequest.getLanguage());
 
     return ResponseEntity.ok().build();
   }
