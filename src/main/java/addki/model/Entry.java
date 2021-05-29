@@ -1,4 +1,4 @@
-package expts.model;
+package addki.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.util.List;

@@ -1,4 +1,4 @@
-package expts.model.projection;
+package addki.model.projection;
 
 public interface LanguageOnly {
   String getLanguage();

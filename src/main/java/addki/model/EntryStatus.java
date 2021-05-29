@@ -1,4 +1,4 @@
-package expts.model;
+package addki.model;
 
 public enum EntryStatus {
   UNCOLLECTED,

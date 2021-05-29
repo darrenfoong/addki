@@ -1,4 +1,4 @@
-package expts.config;
+package addki.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

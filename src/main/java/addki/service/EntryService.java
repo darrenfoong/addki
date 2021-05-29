@@ -1,6 +1,6 @@
-package expts.service;
+package addki.service;
 
-import expts.model.Entry;
+import addki.model.Entry;
 import java.util.List;
 import org.springframework.data.domain.Page;
 

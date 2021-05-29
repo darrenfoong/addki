@@ -1,8 +1,8 @@
-package expts.dao;
+package addki.dao;
 
-import expts.model.Entry;
-import expts.model.EntryStatus;
-import expts.model.projection.LanguageOnly;
+import addki.model.Entry;
+import addki.model.EntryStatus;
+import addki.model.projection.LanguageOnly;
 import java.util.List;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

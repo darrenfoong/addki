@@ -1,8 +1,8 @@
-package expts.controller;
+package addki.controller;
 
-import expts.model.Entry;
-import expts.request.CollectEntryRequest;
-import expts.service.EntryService;
+import addki.model.Entry;
+import addki.request.CollectEntryRequest;
+import addki.service.EntryService;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;

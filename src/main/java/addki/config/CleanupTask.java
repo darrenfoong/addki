@@ -1,6 +1,6 @@
-package expts.config;
+package addki.config;
 
-import expts.service.EntryService;
+import addki.service.EntryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

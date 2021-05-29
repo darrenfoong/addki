@@ -1,10 +1,10 @@
-package expts.service.impl;
+package addki.service.impl;
 
-import expts.dao.EntryRepository;
-import expts.model.Entry;
-import expts.model.EntryStatus;
-import expts.model.projection.LanguageOnly;
-import expts.service.EntryService;
+import addki.dao.EntryRepository;
+import addki.model.Entry;
+import addki.model.EntryStatus;
+import addki.model.projection.LanguageOnly;
+import addki.service.EntryService;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
