@@ -7,52 +7,76 @@
     <title>addki</title>
 </head>
 <body>
-<h1>Hello world!</h1>
-
-<form th:action="@{/}" th:object="${collectEntriesFormRequest}" method="post">
-    Words:
-    <textarea th:field="*{words}"></textarea>
-    Language: <input type="text" th:field="*{language}" />
-    <input type="submit" value="Collect" />
-</form>
-
-<form th:action="@{/api/entry/print}" method="get">
-    <select name="language">
-        <option th:each="language : ${languages}" th:value="${language}" th:text="${language}">
-        </option>
-    </select>
-    <input type="submit" value="Print" />
-</form>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Status</th>
-        <th>Language</th>
-        <th>Word</th>
-        <th>Definition</th>
-        <th>Alternate Form</th>
-        <th>Additional Info</th>
-        <th>Pronunciation</th>
-        <th>Contexts</th>
-        <th>Tags</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="entry : ${entries}">
-        <td th:text="${entry.id}"></td>
-        <td th:text="${entry.status}"></td>
-        <td th:text="${entry.language}"></td>
-        <td th:text="${entry.word}"></td>
-        <td th:text="${entry.definition}"></td>
-        <td th:text="${entry.alternateForm}"></td>
-        <td th:text="${entry.additionalInfo}"></td>
-        <td th:text="${entry.pronunciation}"></td>
-        <td th:text="${entry.contexts}"></td>
-        <td th:text="${entry.tags}"></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container-md">
+    <div id="top" class="row">
+        <div class="col-md-4 p-3">
+            <span><strong>addki</strong></span>
+        </div>
+        <div class="col-md-8 p-3">
+            <form th:action="@{/api/entry/print}" method="get">
+                <div class="form-row float-right">
+                    <div class="col">
+                        <select class="form-control" name="language">
+                            <option th:each="language : ${languages}" th:value="${language}" th:text="${language}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Print</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="main" class="row">
+        <div class="col-md-3 p-3">
+            <form th:action="@{/}" th:object="${collectEntriesFormRequest}" method="post">
+                <div class="form-group">
+                    <label>Words</label>
+                    <textarea class="form-control" th:field="*{words}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Language</label>
+                    <input type="text" class="form-control" th:field="*{language}"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Collect</button>
+            </form>
+        </div>
+        <div class="col-md-9 p-3">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Status</th>
+                        <th>Language</th>
+                        <th>Word</th>
+                        <th>Definition</th>
+                        <th>Alternate Form</th>
+                        <th>Additional Info</th>
+                        <th>Pronunciation</th>
+                        <th>Contexts</th>
+                        <th>Tags</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${entries}">
+                        <td th:text="${entry.id}"></td>
+                        <td th:text="${entry.status}"></td>
+                        <td th:text="${entry.language}"></td>
+                        <td th:text="${entry.word}"></td>
+                        <td th:text="${entry.definition}"></td>
+                        <td th:text="${entry.alternateForm}"></td>
+                        <td th:text="${entry.additionalInfo}"></td>
+                        <td th:text="${entry.pronunciation}"></td>
+                        <td th:text="${entry.contexts}"></td>
+                        <td th:text="${entry.tags}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
