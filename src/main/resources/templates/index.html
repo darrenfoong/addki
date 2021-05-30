@@ -22,7 +22,12 @@
                         </select>
                     </div>
                     <div class="col">
-                        <button type="submit" class="btn btn-primary">Print</button>
+                        <div th:if="${not languages.isEmpty()}">
+                            <button type="submit" class="btn btn-primary">Print</button>
+                        </div>
+                        <div th:if="${languages.isEmpty()}">
+                            <button type="submit" class="btn btn-primary" disabled="disabled">Print</button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -44,8 +49,8 @@
         </div>
         <div class="col-md-9 p-3">
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-sm table-striped table-hover">
+                    <thead class="thead-light">
                     <tr>
                         <th>ID</th>
                         <th>Status</th>
