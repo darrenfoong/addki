@@ -9,29 +9,31 @@
 <body>
 <div class="container-md">
     <div id="top" class="row">
-        <div class="col-md-4 p-3">
-            <a class="btn btn-link" th:href="@{/}">addki</a>
-            <a class="btn btn-danger" th:href="@{/logout}">Log out</a>
-        </div>
-        <div class="col-md-8 p-3">
-            <form th:action="@{/api/entry/print}" method="get">
-                <div class="form-row float-right">
-                    <div class="col">
-                        <select class="form-control" name="language">
-                            <option th:each="language : ${languages}" th:value="${language}" th:text="${language}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <div th:if="${not languages.isEmpty()}">
-                            <button type="submit" class="btn btn-primary">Print</button>
+        <div class="col-md p-3">
+            <div class="float-left">
+                <a class="btn btn-link" th:href="@{/}">addki</a>
+                <a class="btn btn-danger" th:href="@{/logout}">Log out</a>
+            </div>
+            <div class="float-right">
+                <form th:action="@{/api/entry/print}" method="get">
+                    <div class="form-row float-right">
+                        <div class="col">
+                            <select class="form-control" name="language">
+                                <option th:each="language : ${languages}" th:value="${language}" th:text="${language}">
+                                </option>
+                            </select>
                         </div>
-                        <div th:if="${languages.isEmpty()}">
-                            <button type="submit" class="btn btn-primary" disabled="disabled">Print</button>
+                        <div class="col">
+                            <div th:if="${not languages.isEmpty()}">
+                                <button type="submit" class="btn btn-primary">Print</button>
+                            </div>
+                            <div th:if="${languages.isEmpty()}">
+                                <button type="submit" class="btn btn-primary" disabled="disabled">Print</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
     <div id="main" class="row">
