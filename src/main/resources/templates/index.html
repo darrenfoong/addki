@@ -48,6 +48,31 @@
             </form>
         </div>
         <div class="col-md-9 p-3">
+            <div>
+                <p class="float-left">
+                    Showing <span th:text="${(entries.number * entries.size) + (entries.empty ? 0 : 1)}"></span> to
+                    <span th:text="${(entries.number * entries.size) + entries.numberOfElements}"></span> of <span
+                        th:text="${entries.totalElements}"></span>
+                </p>
+                <nav class="float-right">
+                    <ul class="pagination">
+                        <li class="page-item disabled" th:if="${entries.first}">
+                            <a class="page-link" th:href="@{/(number=${entries.number-1},size=${entries.size})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:if="${not entries.first}">
+                            <a class="page-link" th:href="@{/(number=${entries.number-1},size=${entries.size})}">Previous</a>
+                        </li>
+                        <li class="page-item disabled" th:if="${entries.last}">
+                            <a class="page-link"
+                               th:href="@{/(number=${entries.number+1},size=${entries.size})}">Next</a>
+                        </li>
+                        <li class="page-item" th:if="${not entries.last}">
+                            <a class="page-link"
+                               th:href="@{/(number=${entries.number+1},size=${entries.size})}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
             <div class="table-responsive">
                 <table class="table table-sm table-striped table-hover">
                     <thead class="thead-light">
