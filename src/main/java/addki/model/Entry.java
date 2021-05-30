@@ -1,6 +1,7 @@
 package addki.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,8 @@ public class Entry {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  private Instant updated;
 
   private String language;
   private String word;

@@ -5,6 +5,7 @@ import addki.model.Entry;
 import addki.model.EntryStatus;
 import addki.model.projection.LanguageOnly;
 import addki.service.EntryService;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -37,6 +38,7 @@ public class DefaultEntryService implements EntryService {
     List<Entry> entries = entryRepository.findByLanguageAndStatus(language, EntryStatus.COLLECTED);
 
     for (Entry entry : entries) {
+      entry.setUpdated(Instant.now());
       entry.setStatus(EntryStatus.PRINTED);
     }
 
@@ -51,6 +53,7 @@ public class DefaultEntryService implements EntryService {
     for (String word : words) {
       if (word.equals("공부하다")) {
         Entry entry = new Entry();
+        entry.setUpdated(Instant.now());
         entry.setLanguage("ko");
         entry.setWord(word);
         entry.setDefinition("to study");
@@ -64,6 +67,7 @@ public class DefaultEntryService implements EntryService {
         entryRepository.save(entry);
       } else if (word.equals("勉強する")) {
         Entry entry = new Entry();
+        entry.setUpdated(Instant.now());
         entry.setLanguage("jp");
         entry.setWord(word);
         entry.setDefinition("공부하다");
@@ -77,6 +81,7 @@ public class DefaultEntryService implements EntryService {
         entryRepository.save(entry);
       } else if (word.equals("读书")) {
         Entry entry = new Entry();
+        entry.setUpdated(Instant.now());
         entry.setLanguage("zh-cn");
         entry.setWord(word);
         entry.setDefinition("to study");

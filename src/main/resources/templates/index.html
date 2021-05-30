@@ -82,6 +82,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Status</th>
+                        <th>Updated</th>
                         <th>Language</th>
                         <th>Word</th>
                         <th>Definition</th>
@@ -96,6 +97,7 @@
                     <tr th:each="entry : ${entries}">
                         <td th:text="${entry.id}"></td>
                         <td th:text="${entry.status}"></td>
+                        <td th:text="${entry.updated}"></td>
                         <td th:text="${entry.language}"></td>
                         <td th:text="${entry.word}"></td>
                         <td th:text="${entry.definition}"></td>
