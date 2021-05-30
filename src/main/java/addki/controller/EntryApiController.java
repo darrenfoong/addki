@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +35,8 @@ public class EntryApiController {
     return entryService.getLanguages();
   }
 
-  @GetMapping(path = "/entry/print/{language}")
-  public ResponseEntity<?> printEntries(@PathVariable String language) {
+  @GetMapping(path = "/entry/print")
+  public ResponseEntity<?> printEntries(@RequestParam String language) {
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
         .header(
@@ -52,7 +51,7 @@ public class EntryApiController {
   }
 
   @PostMapping("/entry/collect")
-  public ResponseEntity<Void> collectEntry(
+  public ResponseEntity<Void> collectEntries(
       @RequestBody CollectEntriesRequest collectEntriesRequest) {
     entryService.collectEntries(
         collectEntriesRequest.getWords(), collectEntriesRequest.getLanguage());
