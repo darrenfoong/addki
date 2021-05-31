@@ -37,7 +37,7 @@ gradle bootBuildImage
 
 ```
 podman run --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=addki -p 5432:5432 -d docker.io/postgres:13.3
-podman run --name rabbit --hostname rabbit -p 5672:5672 -d docker.io/rabbitmq:3.8.16
+podman run --name rabbit --hostname rabbit -p 5672:5672 -p 8081:15672 -d docker.io/rabbitmq:3.8.16-management
 gradle bootRun
 ```
 
