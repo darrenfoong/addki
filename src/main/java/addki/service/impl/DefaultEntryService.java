@@ -68,27 +68,28 @@ public class DefaultEntryService implements EntryService {
   }
 
   @Override
-  public void collectEntries(List<String> words, String language) {
+  public void collectEntries(final List<String> words, final String language) {
     for (String word : words) {
       Entry entry = new Entry();
       entry.setUpdated(Instant.now());
       entry.setWord(word);
 
+      String detectedLanguage = language;
       boolean error = false;
 
-      if (language == null || language.isBlank()) {
+      if (detectedLanguage == null || detectedLanguage.isBlank()) {
         List<DetectedLanguage> probs = languageDetector.getProbabilities(word);
 
         if (!probs.isEmpty()) {
-          language = probs.get(0).getLocale().getLanguage();
+          detectedLanguage = probs.get(0).getLocale().getLanguage();
 
-          if (!supportedLanguages.contains(language)) {
+          if (!supportedLanguages.contains(detectedLanguage)) {
             entry.setErrorMessage(
-                String.format("Detected language (%s) is not supported", language));
+                String.format("Detected language (%s) is not supported", detectedLanguage));
             error = true;
           }
 
-          entry.setLanguage(language);
+          entry.setLanguage(detectedLanguage);
         } else {
           entry.setErrorMessage(String.format("Failed to detect language of %s", word));
           error = true;
@@ -106,11 +107,11 @@ public class DefaultEntryService implements EntryService {
       CollectEntryRequest collectEntryRequest = new CollectEntryRequest();
       collectEntryRequest.setId(entry.getId());
       collectEntryRequest.setWord(word);
-      collectEntryRequest.setLanguage(language);
+      collectEntryRequest.setLanguage(detectedLanguage);
 
       if (!error) {
         rabbitTemplate.convertAndSend(
-            String.format("%s.%s", requestPrefix, language), collectEntryRequest);
+            String.format("%s.%s", requestPrefix, detectedLanguage), collectEntryRequest);
       }
     }
   }
