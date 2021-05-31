@@ -72,7 +72,6 @@ public class DefaultEntryService implements EntryService {
     for (String word : words) {
       Entry entry = new Entry();
       entry.setUpdated(Instant.now());
-      entry.setWord(word);
 
       String detectedLanguage = language;
       boolean error = false;
@@ -88,13 +87,14 @@ public class DefaultEntryService implements EntryService {
                 String.format("Detected language (%s) is not supported", detectedLanguage));
             error = true;
           }
-
-          entry.setLanguage(detectedLanguage);
         } else {
           entry.setErrorMessage(String.format("Failed to detect language of %s", word));
           error = true;
         }
       }
+
+      entry.setLanguage(detectedLanguage);
+      entry.setWord(word);
 
       if (!error) {
         entry.setStatus(EntryStatus.COLLECTING);
