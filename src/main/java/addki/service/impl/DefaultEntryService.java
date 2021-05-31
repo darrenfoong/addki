@@ -7,6 +7,8 @@ import addki.model.projection.LanguageOnly;
 import addki.request.CollectEntryRequest;
 import addki.response.CollectEntryResponse;
 import addki.service.EntryService;
+import com.optimaize.langdetect.DetectedLanguage;
+import com.optimaize.langdetect.LanguageDetector;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,8 @@ public class DefaultEntryService implements EntryService {
   @Autowired private EntryRepository entryRepository;
 
   @Autowired private RabbitTemplate rabbitTemplate;
+
+  @Autowired private LanguageDetector languageDetector;
 
   @Override
   public Page<Entry> getEntries(int number, int size) {
@@ -58,7 +62,16 @@ public class DefaultEntryService implements EntryService {
   @Override
   public void collectEntries(List<String> words, String language) {
     for (String word : words) {
-      // TODO Language detection
+      if (language == null || language.isBlank()) {
+        List<DetectedLanguage> probs = languageDetector.getProbabilities(word);
+
+        if (!probs.isEmpty()) {
+          language = probs.get(0).getLocale().getLanguage();
+        } else {
+          log.error("Failed to detect language of {}", word);
+        }
+      }
+
       Entry entry = new Entry();
       entry.setUpdated(Instant.now());
       entry.setLanguage(language);
@@ -92,7 +105,7 @@ public class DefaultEntryService implements EntryService {
     rabbitTemplate.convertAndSend("response", collectEntryResponse);
   }
 
-  @RabbitListener(queues = "request.jp")
+  @RabbitListener(queues = "request.ja")
   public void handleJpRequest(CollectEntryRequest collectEntryRequest) {
     CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
     collectEntryResponse.setId(collectEntryRequest.getId());

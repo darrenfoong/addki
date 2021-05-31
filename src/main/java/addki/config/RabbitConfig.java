@@ -16,7 +16,7 @@ public class RabbitConfig {
   private String topicExchangeName = "addki";
 
   private String koRequestQueue = "request.ko";
-  private String jpRequestQueue = "request.jp";
+  private String jaRequestQueue = "request.ja";
   private String zhRequestQueue = "request.zh";
   private String responseQueue = "response";
 
@@ -26,8 +26,8 @@ public class RabbitConfig {
   }
 
   @Bean
-  public Queue jpRequestQueue() {
-    return new Queue(jpRequestQueue, false);
+  public Queue jaRequestQueue() {
+    return new Queue(jaRequestQueue, false);
   }
 
   @Bean
@@ -51,8 +51,8 @@ public class RabbitConfig {
   }
 
   @Bean
-  public Binding jpRequestBinding(TopicExchange exchange) {
-    return BindingBuilder.bind(jpRequestQueue()).to(exchange).with(jpRequestQueue().getName());
+  public Binding jaRequestBinding(TopicExchange exchange) {
+    return BindingBuilder.bind(jaRequestQueue()).to(exchange).with(jaRequestQueue().getName());
   }
 
   @Bean
