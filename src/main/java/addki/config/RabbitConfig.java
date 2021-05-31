@@ -2,7 +2,6 @@ package addki.config;
 
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
 @Configuration
 public class RabbitConfig {
   @Value("${mq.topic-exchange}")
@@ -41,7 +39,6 @@ public class RabbitConfig {
   public void createQueues() {
     for (String supportedLanguage : supportedLanguages) {
       String queueName = String.format("%s.%s", requestPrefix, supportedLanguage);
-      log.info("Creating queue for {}, {}", supportedLanguage, queueName);
       Queue queue = new Queue(queueName, false);
       Binding binding = BindingBuilder.bind(queue).to(exchange).with(queue.getName());
 
