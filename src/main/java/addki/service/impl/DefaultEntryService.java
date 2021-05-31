@@ -14,8 +14,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +44,23 @@ public class DefaultEntryService implements EntryService {
 
   @Value("${languages.supported}")
   private Set<String> supportedLanguages;
+
+  @Autowired private AmqpAdmin amqpAdmin;
+
+  @Autowired private TopicExchange exchange;
+
+  @PostConstruct
+  public void createQueues() {
+    for (String supportedLanguage : supportedLanguages) {
+      String queueName = String.format("%s.%s", requestPrefix, supportedLanguage);
+      log.info("Creating queue for {}, {}", supportedLanguage, queueName);
+      Queue queue = new Queue(queueName, false);
+      Binding binding = BindingBuilder.bind(queue).to(exchange).with(queue.getName());
+
+      amqpAdmin.declareQueue(queue);
+      amqpAdmin.declareBinding(binding);
+    }
+  }
 
   @Override
   public Page<Entry> getEntries(int number, int size) {
@@ -80,15 +103,15 @@ public class DefaultEntryService implements EntryService {
         List<DetectedLanguage> probs = languageDetector.getProbabilities(word);
 
         if (!probs.isEmpty()) {
-          String detectedLanguage = probs.get(0).getLocale().getLanguage();
+          language = probs.get(0).getLocale().getLanguage();
 
-          if (!supportedLanguages.contains(detectedLanguage)) {
+          if (!supportedLanguages.contains(language)) {
             entry.setErrorMessage(
-                String.format("Detected language (%s) is not supported", detectedLanguage));
+                String.format("Detected language (%s) is not supported", language));
             error = true;
           }
 
-          entry.setLanguage(detectedLanguage);
+          entry.setLanguage(language);
         } else {
           entry.setErrorMessage(String.format("Failed to detect language of %s", word));
           error = true;

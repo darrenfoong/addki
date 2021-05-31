@@ -32,20 +32,8 @@ public class RabbitConfig {
   private Set<String> supportedLanguages;
 
   @Bean
-  public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory, TopicExchange exchange) {
-    AmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory);
-
-    for (String supportedLanguage : supportedLanguages) {
-      String queueName = String.format("%s.%s", requestPrefix, supportedLanguage);
-      log.info("Creating queue for {}, {}", supportedLanguage, queueName);
-      Queue queue = new Queue(queueName, false);
-      Binding binding = BindingBuilder.bind(queue).to(exchange).with(queue.getName());
-
-      amqpAdmin.declareQueue(queue);
-      amqpAdmin.declareBinding(binding);
-    }
-
-    return amqpAdmin;
+  public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+    return new RabbitAdmin(connectionFactory);
   }
 
   @Bean
