@@ -1,43 +1,56 @@
 package addki.config;
 
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class RabbitConfig {
-  private String topicExchangeName = "addki";
+  @Value("${mq.topic-exchange}")
+  private String topicExchangeName;
 
-  private String koRequestQueue = "request.ko";
-  private String jaRequestQueue = "request.ja";
-  private String zhRequestQueue = "request.zh";
-  private String responseQueue = "response";
+  @Value("${mq.request}")
+  private String requestPrefix;
 
-  @Bean
-  public Queue koRequestQueue() {
-    return new Queue(koRequestQueue, false);
-  }
+  @Value("${mq.response}")
+  private String responsePrefix;
 
-  @Bean
-  public Queue jaRequestQueue() {
-    return new Queue(jaRequestQueue, false);
-  }
+  @Value("${languages.supported}")
+  private Set<String> supportedLanguages;
 
-  @Bean
-  public Queue zhRequestQueue() {
-    return new Queue(zhRequestQueue, false);
-  }
+  //  private String koRequestQueue = "request.ko";
+  //  private String jaRequestQueue = "request.ja";
+  //  private String zhRequestQueue = "request.zh";
+  //  private String responseQueue = "response";
 
   @Bean
-  public Queue responseQueue() {
-    return new Queue(responseQueue, false);
+  public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+    AmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory);
+
+    for (String supportedLanguage : supportedLanguages) {
+      String queueName = String.format("%s.%s", requestPrefix, supportedLanguage);
+      log.info("Creating queue for {}, {}", supportedLanguage, queueName);
+      Queue queue = new Queue(queueName, false);
+      Binding binding = BindingBuilder.bind(queue).to(exchange()).with(queue.getName());
+
+      amqpAdmin.declareQueue(queue);
+      amqpAdmin.declareBinding(binding);
+    }
+
+    return amqpAdmin;
   }
 
   @Bean
@@ -46,18 +59,8 @@ public class RabbitConfig {
   }
 
   @Bean
-  public Binding koRequestBinding(TopicExchange exchange) {
-    return BindingBuilder.bind(koRequestQueue()).to(exchange).with(koRequestQueue().getName());
-  }
-
-  @Bean
-  public Binding jaRequestBinding(TopicExchange exchange) {
-    return BindingBuilder.bind(jaRequestQueue()).to(exchange).with(jaRequestQueue().getName());
-  }
-
-  @Bean
-  public Binding zhRequestBinding(TopicExchange exchange) {
-    return BindingBuilder.bind(zhRequestQueue()).to(exchange).with(zhRequestQueue().getName());
+  public Queue responseQueue() {
+    return new Queue(responsePrefix, false);
   }
 
   @Bean

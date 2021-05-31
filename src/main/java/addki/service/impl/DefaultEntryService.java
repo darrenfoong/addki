@@ -33,8 +33,11 @@ public class DefaultEntryService implements EntryService {
 
   @Autowired private LanguageDetector languageDetector;
 
-  @Value("${languages")
-  private Set<String> languages;
+  @Value("${mq.request}")
+  private String requestPrefix;
+
+  @Value("${languages.supported}")
+  private Set<String> supportedLanguages;
 
   @Override
   public Page<Entry> getEntries(int number, int size) {
@@ -42,7 +45,7 @@ public class DefaultEntryService implements EntryService {
   }
 
   @Override
-  public List<String> getLanguages() {
+  public List<String> getSupportedLanguages() {
     return entryRepository.findDistinctByStatus(EntryStatus.COLLECTED).stream()
         .map(LanguageOnly::getLanguage)
         .collect(Collectors.toList());
@@ -79,7 +82,7 @@ public class DefaultEntryService implements EntryService {
         if (!probs.isEmpty()) {
           String detectedLanguage = probs.get(0).getLocale().getLanguage();
 
-          if (!languages.contains(detectedLanguage)) {
+          if (!supportedLanguages.contains(detectedLanguage)) {
             entry.setErrorMessage(
                 String.format("Detected language (%s) is not supported", detectedLanguage));
             error = true;
@@ -106,7 +109,8 @@ public class DefaultEntryService implements EntryService {
       collectEntryRequest.setLanguage(language);
 
       if (!error) {
-        rabbitTemplate.convertAndSend("request." + language, collectEntryRequest);
+        rabbitTemplate.convertAndSend(
+            String.format("%s.%s", requestPrefix, language), collectEntryRequest);
       }
     }
   }

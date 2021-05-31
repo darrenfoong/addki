@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 public interface EntryService {
   Page<Entry> getEntries(int number, int size);
 
-  List<String> getLanguages();
+  List<String> getSupportedLanguages();
 
   String printEntries(String language);
 

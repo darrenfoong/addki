@@ -6,11 +6,15 @@ import java.util.List;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MockCollectors {
   @Autowired private RabbitTemplate rabbitTemplate;
+
+  @Value("${mq.response}")
+  private String responsePrefix;
 
   @RabbitListener(queues = "request.ko")
   public void handleKoRequest(CollectEntryRequest collectEntryRequest) {
@@ -31,7 +35,7 @@ public class MockCollectors {
     collectEntryResponse.setContexts(List.of("저는 매일 공부합니다"));
     collectEntryResponse.setTags(List.of("v"));
 
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+    rabbitTemplate.convertAndSend(responsePrefix, collectEntryResponse);
   }
 
   @RabbitListener(queues = "request.ja")
@@ -52,7 +56,7 @@ public class MockCollectors {
     collectEntryResponse.setPronunciation(null);
     collectEntryResponse.setContexts(null);
     collectEntryResponse.setTags(List.of("v"));
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+    rabbitTemplate.convertAndSend(responsePrefix, collectEntryResponse);
   }
 
   @RabbitListener(queues = "request.zh")
@@ -74,6 +78,6 @@ public class MockCollectors {
     collectEntryResponse.setContexts(null);
     collectEntryResponse.setTags(List.of("v"));
 
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+    rabbitTemplate.convertAndSend(responsePrefix, collectEntryResponse);
   }
 }

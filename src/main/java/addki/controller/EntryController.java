@@ -20,7 +20,7 @@ public class EntryController {
       @RequestParam(defaultValue = "10") int size,
       Model model) {
     model.addAttribute("entries", entryService.getEntries(number, size));
-    model.addAttribute("languages", entryService.getLanguages());
+    model.addAttribute("languages", entryService.getSupportedLanguages());
     model.addAttribute("collectEntriesFormRequest", new CollectEntriesFormRequest());
     return "index";
   }

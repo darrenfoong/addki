@@ -32,7 +32,7 @@ public class EntryApiController {
 
   @GetMapping("/language")
   public List<String> getLanguages() {
-    return entryService.getLanguages();
+    return entryService.getSupportedLanguages();
   }
 
   @GetMapping(path = "/entry/print")

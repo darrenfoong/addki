@@ -28,9 +28,12 @@ spring:
 ---
 
 languages:
-  - ko
-  - ja
-  - zh
+  supported: ko, ja, zh
+
+mq:
+  topic-exchange: addki
+  request: request
+  response: response
 
 cleanup:
   delay: 10000
