@@ -81,16 +81,16 @@ public class DefaultEntryService implements EntryService {
 
         if (!probs.isEmpty()) {
           detectedLanguage = probs.get(0).getLocale().getLanguage();
-
-          if (!supportedLanguages.contains(detectedLanguage)) {
-            entry.setErrorMessage(
-                String.format("Detected language (%s) is not supported", detectedLanguage));
-            error = true;
-          }
         } else {
           entry.setErrorMessage(String.format("Failed to detect language of %s", word));
           error = true;
         }
+      }
+
+      if (!supportedLanguages.contains(detectedLanguage)) {
+        entry.setErrorMessage(
+            String.format("Detected language (%s) is not supported", detectedLanguage));
+        error = true;
       }
 
       entry.setLanguage(detectedLanguage);
