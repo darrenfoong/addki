@@ -31,11 +31,6 @@ public class RabbitConfig {
   @Value("${languages.supported}")
   private Set<String> supportedLanguages;
 
-  //  private String koRequestQueue = "request.ko";
-  //  private String jaRequestQueue = "request.ja";
-  //  private String zhRequestQueue = "request.zh";
-  //  private String responseQueue = "response";
-
   @Bean
   public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
     AmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory);
