@@ -5,4 +5,5 @@ public enum EntryStatus {
   COLLECTING,
   COLLECTED,
   PRINTED,
+  ERROR,
 }

@@ -62,21 +62,22 @@ public class DefaultEntryService implements EntryService {
   @Override
   public void collectEntries(List<String> words, String language) {
     for (String word : words) {
+      Entry entry = new Entry();
+      entry.setUpdated(Instant.now());
+      entry.setWord(word);
+
+      boolean error = false;
+
       if (language == null || language.isBlank()) {
         List<DetectedLanguage> probs = languageDetector.getProbabilities(word);
 
         if (!probs.isEmpty()) {
-          language = probs.get(0).getLocale().getLanguage();
+          entry.setLanguage(probs.get(0).getLocale().getLanguage());
         } else {
           log.error("Failed to detect language of {}", word);
+          error = true;
         }
       }
-
-      Entry entry = new Entry();
-      entry.setUpdated(Instant.now());
-      entry.setLanguage(language);
-      entry.setWord(word);
-      entry.setStatus(EntryStatus.COLLECTING);
 
       entry = entryRepository.save(entry);
 
@@ -85,65 +86,17 @@ public class DefaultEntryService implements EntryService {
       collectEntryRequest.setWord(word);
       collectEntryRequest.setLanguage(language);
 
-      rabbitTemplate.convertAndSend("request." + language, collectEntryRequest);
+      if (!error) {
+        entry.setStatus(EntryStatus.COLLECTING);
+        rabbitTemplate.convertAndSend("request." + language, collectEntryRequest);
+      } else {
+        entry.setStatus(EntryStatus.ERROR);
+      }
     }
-  }
-
-  @RabbitListener(queues = "request.ko")
-  public void handleKoRequest(CollectEntryRequest collectEntryRequest) {
-    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
-    collectEntryResponse.setId(collectEntryRequest.getId());
-    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
-    collectEntryResponse.setWord(collectEntryRequest.getWord());
-    collectEntryResponse.setDefinition("to study");
-    collectEntryResponse.setAlternateForm("工夫");
-    collectEntryResponse.setAdditionalInfo(null);
-    collectEntryResponse.setPronunciation(null);
-    collectEntryResponse.setContexts(List.of("저는 매일 공부합니다"));
-    collectEntryResponse.setTags(List.of("v"));
-
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
-  }
-
-  @RabbitListener(queues = "request.ja")
-  public void handleJpRequest(CollectEntryRequest collectEntryRequest) {
-    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
-    collectEntryResponse.setId(collectEntryRequest.getId());
-    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
-    collectEntryResponse.setWord(collectEntryRequest.getWord());
-    collectEntryResponse.setDefinition("공부하다");
-    collectEntryResponse.setAlternateForm("べんきょうする");
-    collectEntryResponse.setAdditionalInfo(null);
-    collectEntryResponse.setPronunciation(null);
-    collectEntryResponse.setContexts(null);
-    collectEntryResponse.setTags(List.of("v"));
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
-  }
-
-  @RabbitListener(queues = "request.zh")
-  public void handleZhRequest(CollectEntryRequest collectEntryRequest) {
-    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
-    collectEntryResponse.setId(collectEntryRequest.getId());
-    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
-    collectEntryResponse.setWord(collectEntryRequest.getWord());
-    collectEntryResponse.setDefinition("to study");
-    collectEntryResponse.setAlternateForm(null);
-    collectEntryResponse.setAdditionalInfo(null);
-    collectEntryResponse.setPronunciation("du2 shu1");
-    collectEntryResponse.setContexts(null);
-    collectEntryResponse.setTags(List.of("v"));
-
-    rabbitTemplate.convertAndSend("response", collectEntryResponse);
   }
 
   @RabbitListener(queues = "response")
   public void handleResponse(CollectEntryResponse collectEntryResponse) {
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
     Optional<Entry> entryOpt = entryRepository.findById(collectEntryResponse.getId());
 
     if (entryOpt.isPresent()) {
