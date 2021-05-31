@@ -4,12 +4,17 @@ import addki.dao.EntryRepository;
 import addki.model.Entry;
 import addki.model.EntryStatus;
 import addki.model.projection.LanguageOnly;
+import addki.request.CollectEntryRequest;
+import addki.response.CollectEntryResponse;
 import addki.service.EntryService;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +24,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultEntryService implements EntryService {
   @Autowired private EntryRepository entryRepository;
+
+  @Autowired private RabbitTemplate rabbitTemplate;
 
   @Override
   public Page<Entry> getEntries(int number, int size) {
@@ -51,49 +58,98 @@ public class DefaultEntryService implements EntryService {
   @Override
   public void collectEntries(List<String> words, String language) {
     for (String word : words) {
-      if (word.equals("공부하다")) {
-        Entry entry = new Entry();
-        entry.setUpdated(Instant.now());
-        entry.setLanguage("ko");
-        entry.setWord(word);
-        entry.setDefinition("to study");
-        entry.setAlternateForm("工夫");
-        entry.setAdditionalInfo(null);
-        entry.setPronunciation(null);
-        entry.setContexts(List.of("저는 매일 공부합니다"));
-        entry.setTags(List.of("v"));
-        entry.setStatus(EntryStatus.COLLECTED);
+      // TODO Language detection
+      Entry entry = new Entry();
+      entry.setUpdated(Instant.now());
+      entry.setLanguage(language);
+      entry.setWord(word);
+      entry.setStatus(EntryStatus.COLLECTING);
 
-        entryRepository.save(entry);
-      } else if (word.equals("勉強する")) {
-        Entry entry = new Entry();
-        entry.setUpdated(Instant.now());
-        entry.setLanguage("jp");
-        entry.setWord(word);
-        entry.setDefinition("공부하다");
-        entry.setAlternateForm("べんきょうする");
-        entry.setAdditionalInfo(null);
-        entry.setPronunciation(null);
-        entry.setContexts(null);
-        entry.setTags(List.of("v"));
-        entry.setStatus(EntryStatus.COLLECTED);
+      entry = entryRepository.save(entry);
 
-        entryRepository.save(entry);
-      } else if (word.equals("读书")) {
-        Entry entry = new Entry();
-        entry.setUpdated(Instant.now());
-        entry.setLanguage("zh-cn");
-        entry.setWord(word);
-        entry.setDefinition("to study");
-        entry.setAlternateForm(null);
-        entry.setAdditionalInfo(null);
-        entry.setPronunciation("du2 shu1");
-        entry.setContexts(null);
-        entry.setTags(List.of("v"));
-        entry.setStatus(EntryStatus.COLLECTED);
+      CollectEntryRequest collectEntryRequest = new CollectEntryRequest();
+      collectEntryRequest.setId(entry.getId());
+      collectEntryRequest.setWord(word);
+      collectEntryRequest.setLanguage(language);
 
-        entryRepository.save(entry);
-      }
+      rabbitTemplate.convertAndSend("request." + language, collectEntryRequest);
+    }
+  }
+
+  @RabbitListener(queues = "request.ko")
+  public void handleKoRequest(CollectEntryRequest collectEntryRequest) {
+    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
+    collectEntryResponse.setId(collectEntryRequest.getId());
+    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
+    collectEntryResponse.setWord(collectEntryRequest.getWord());
+    collectEntryResponse.setDefinition("to study");
+    collectEntryResponse.setAlternateForm("工夫");
+    collectEntryResponse.setAdditionalInfo(null);
+    collectEntryResponse.setPronunciation(null);
+    collectEntryResponse.setContexts(List.of("저는 매일 공부합니다"));
+    collectEntryResponse.setTags(List.of("v"));
+
+    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+  }
+
+  @RabbitListener(queues = "request.jp")
+  public void handleJpRequest(CollectEntryRequest collectEntryRequest) {
+    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
+    collectEntryResponse.setId(collectEntryRequest.getId());
+    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
+    collectEntryResponse.setWord(collectEntryRequest.getWord());
+    collectEntryResponse.setDefinition("공부하다");
+    collectEntryResponse.setAlternateForm("べんきょうする");
+    collectEntryResponse.setAdditionalInfo(null);
+    collectEntryResponse.setPronunciation(null);
+    collectEntryResponse.setContexts(null);
+    collectEntryResponse.setTags(List.of("v"));
+    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+  }
+
+  @RabbitListener(queues = "request.zh")
+  public void handleZhRequest(CollectEntryRequest collectEntryRequest) {
+    CollectEntryResponse collectEntryResponse = new CollectEntryResponse();
+    collectEntryResponse.setId(collectEntryRequest.getId());
+    collectEntryResponse.setLanguage(collectEntryRequest.getLanguage());
+    collectEntryResponse.setWord(collectEntryRequest.getWord());
+    collectEntryResponse.setDefinition("to study");
+    collectEntryResponse.setAlternateForm(null);
+    collectEntryResponse.setAdditionalInfo(null);
+    collectEntryResponse.setPronunciation("du2 shu1");
+    collectEntryResponse.setContexts(null);
+    collectEntryResponse.setTags(List.of("v"));
+
+    rabbitTemplate.convertAndSend("response", collectEntryResponse);
+  }
+
+  @RabbitListener(queues = "response")
+  public void handleResponse(CollectEntryResponse collectEntryResponse) {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    Optional<Entry> entryOpt = entryRepository.findById(collectEntryResponse.getId());
+
+    if (entryOpt.isPresent()) {
+      Entry entry = entryOpt.get();
+
+      entry.setWord(collectEntryResponse.getWord());
+      entry.setDefinition(collectEntryResponse.getDefinition());
+      entry.setAlternateForm(collectEntryResponse.getAlternateForm());
+      entry.setAdditionalInfo(collectEntryResponse.getAdditionalInfo());
+      entry.setPronunciation(collectEntryResponse.getPronunciation());
+      entry.setContexts(collectEntryResponse.getContexts());
+      entry.setTags(collectEntryResponse.getTags());
+
+      entry.setUpdated(Instant.now());
+      entry.setStatus(EntryStatus.COLLECTED);
+
+      entryRepository.save(entry);
+    } else {
+      log.error("Invalid CollectEntryResponse (id: {})", collectEntryResponse.getId());
     }
   }
 
