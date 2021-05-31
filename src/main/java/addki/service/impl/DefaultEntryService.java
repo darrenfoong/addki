@@ -12,12 +12,14 @@ import com.optimaize.langdetect.LanguageDetector;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class DefaultEntryService implements EntryService {
   @Autowired private RabbitTemplate rabbitTemplate;
 
   @Autowired private LanguageDetector languageDetector;
+
+  @Value("${languages")
+  private Set<String> languages;
 
   @Override
   public Page<Entry> getEntries(int number, int size) {
@@ -72,11 +77,25 @@ public class DefaultEntryService implements EntryService {
         List<DetectedLanguage> probs = languageDetector.getProbabilities(word);
 
         if (!probs.isEmpty()) {
-          entry.setLanguage(probs.get(0).getLocale().getLanguage());
+          String detectedLanguage = probs.get(0).getLocale().getLanguage();
+
+          if (!languages.contains(detectedLanguage)) {
+            entry.setErrorMessage(
+                String.format("Detected language (%s) is not supported", detectedLanguage));
+            error = true;
+          }
+
+          entry.setLanguage(detectedLanguage);
         } else {
-          log.error("Failed to detect language of {}", word);
+          entry.setErrorMessage(String.format("Failed to detect language of %s", word));
           error = true;
         }
+      }
+
+      if (!error) {
+        entry.setStatus(EntryStatus.COLLECTING);
+      } else {
+        entry.setStatus(EntryStatus.ERROR);
       }
 
       entry = entryRepository.save(entry);
@@ -87,10 +106,7 @@ public class DefaultEntryService implements EntryService {
       collectEntryRequest.setLanguage(language);
 
       if (!error) {
-        entry.setStatus(EntryStatus.COLLECTING);
         rabbitTemplate.convertAndSend("request." + language, collectEntryRequest);
-      } else {
-        entry.setStatus(EntryStatus.ERROR);
       }
     }
   }

@@ -27,5 +27,10 @@ spring:
 
 ---
 
+languages:
+  - ko
+  - ja
+  - zh
+
 cleanup:
   delay: 10000

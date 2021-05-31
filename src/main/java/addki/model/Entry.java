@@ -40,6 +40,7 @@ public class Entry {
   private List<String> tags;
 
   private EntryStatus status;
+  private String errorMessage;
 
   public String toAnkiString() {
     StringBuilder stringBuilder = new StringBuilder();
