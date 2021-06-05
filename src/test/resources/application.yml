@@ -1,0 +1,7 @@
+languages:
+  supported: ko, ja, zh
+
+mq:
+  topic-exchange: addki
+  request: request
+  response: response

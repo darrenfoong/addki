@@ -87,7 +87,7 @@ public class DefaultEntryService implements EntryService {
         }
       }
 
-      if (!supportedLanguages.contains(detectedLanguage)) {
+      if (!error && !supportedLanguages.contains(detectedLanguage)) {
         entry.setErrorMessage(
             String.format("Detected language (%s) is not supported", detectedLanguage));
         error = true;
